@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'customer.apps.CustomerConfig',
     'supercustomer.apps.SupercustomerConfig',
+    'Order.apps.OrderConfig',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
