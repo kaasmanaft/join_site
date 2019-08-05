@@ -1,0 +1,54 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+{#{% if dbd %}#}
+{#<h1>it exist</h1>#}
+{#{% endif %}#}
+
+    {% for row in dbd %}
+        <div class="border border-primary">
+          <div class="col">
+           {% for layer in row.agg_photos %}
+           <img class="ml-4" src="{{ row.base_photo_url }}{{layer}}/140.jpg">
+            {% endfor %}
+       Name {{ row.name }}
+       Price {{ row.price }}
+          </div>
+          </div>
+    <form method="post" action="{% url 'save_order' %}">
+    {% csrf_token %}
+        <label for="amount">number of goods </label>
+        <input id="amount" type="number"  name="quantity" value="1">
+        <input id="id" type="hidden"  name="id" value="{{ row.id }}" >
+    <button type="submit" class="button btn-success">get</button>
+    </form>
+
+    {% endfor %}
+
+
+
+{#    {%  for row in dbd %}#}
+{#        <div class="border border-danger">#}
+{#       {% if row.1 %}#}
+{#           <b class="alert">attribute exist</b>#}
+{#        <div class="row">#}
+{#            {% for layer in row.1 %}#}
+{#           <img class="ml-4" src="{{ row.2 }}{{layer}}/140.jpg">#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#       {% endif %}#}
+{#        {% for cell in row %}#}
+{#        <div class="col-xl-auto">{{ cell }}</div>#}
+{#            <hr>#}
+{#        {% endfor %}#}
+{#        <hr>#}
+{#        </div>#}
+{#    <form method="post" action="{% url 'item'  row.0  %}">#}
+{#    {% csrf_token %}#}
+{#        <label for="amount">number of goods </label>#}
+{#        <input id="amount" type="number"  name="quantity" value="1">#}
+{#        <input id="id" type="hidden"  name="id" value="{{ row.0 }}" >#}
+{#    <button type="submit" class="button btn-success">get</button>#}
+{#    </form>#}
+{#    {% endfor %}#}
+
+{% endblock content %}
