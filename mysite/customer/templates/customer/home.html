@@ -1,27 +1,5 @@
-
+{% extends 'customer/base.html' %}
 {% block content %}
-{% if user.is_authenticated %}
-<div class="container-fluid">
-    <div class="row ">
-        <div class="col-sm-8"><a href="{% url 'register_uuid' user.su_additional.uuid_for_reg  %}">Add NEW User?</a> </div>
-        <div class="col-sm-2" align="right">{{user.su_additional.uuid_for_reg}}</div>
-        <div class="col-sm-2" align="right">You are logged as {{user.username}}</div>
-
-    </div>
-    <div class="row">
-       <div class="col-sm-8"> </div>
-        <div class="col-sm-2" align="right"></div>
-        <div class="col-sm-2" align="right"><a href="{% url 'logout' %}">Logout</a></div>
-    </div>
-    {% else %}
-        <div class="row ">
-        <div class="col-sm-8"><a href="{% url 'login' %}">Have a login?</a> </div>
-
-    </div>
-{% endif %}
-
-</div>
-
 
     {% for user in users %}
         <p>{{user}}</p>

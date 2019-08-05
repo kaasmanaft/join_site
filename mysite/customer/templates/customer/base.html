@@ -8,7 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+{#    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">#}
+    <link rel="stylesheet" type="text/css" href="{% static 'customer/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'customer/main.css' %}">
    {% if title %}
     <title>{{title}}</title>
@@ -23,10 +24,11 @@
 </header>
 
 
+
 <div class="container-fluid">
   <div class="row">
     <div class="col-sm-2" style="background-color:lavender;">Menu</div>
-    <div class="col-sm-8" style="background-color:lavenderblush;">
+    <div class="col-sm-8" style="background-color:white;">
 
         {% if messages %}
             {% for message in messages %}
@@ -39,7 +41,35 @@
         {% block content %}{% endblock %}
 
     </div>
-    <div class="col-sm-2" style="background-color:lavender;">login and info</div>
+    <div class="col-sm-2" style="background-color:lavender;">
+
+        login and info
+    {% if user.is_authenticated %}
+    <div class="container-fluid">
+    <div class="col ">
+        <div class="col-sm-8"><a href="{% url 'register_uuid' user.su_additional.uuid_for_reg  %}">Add NEW User?</a> </div>
+        <div class="col-sm-12" align="right">{{user.su_additional.uuid_for_reg}}</div>
+        <div class="col-sm-12" align="right">You are logged as {{user.username}}</div>
+
+    </div>
+    <div class="row">
+       <div class="col-sm-8"> </div>
+        <div class="col-sm-2" align="right"></div>
+        <div class="col-sm-2" align="right"><a href="{% url 'logout' %}">Logout</a></div>
+    </div>
+    {% else %}
+        <div class="row ">
+        <div class="col-sm-8"><a href="{% url 'login' %}">Have a login?</a> </div>
+
+    </div>
+
+
+</div>
+{% endif %}
+
+    </div>
+
+
   </div>
 
 
