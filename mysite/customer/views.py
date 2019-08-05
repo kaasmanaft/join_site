@@ -20,7 +20,6 @@ def register(request, uuid):
             username = form.cleaned_data.get('username')
             uuid = form.cleaned_data.get('uuid')
             su = su_additional.objects.filter(uuid_for_reg=uuid).first()
-
             group = su.user.groups.first()
             # group = su_additional.objects.filter(uuid_for_reg=uuid).first()
             user = User.objects.filter(username=username).first()
