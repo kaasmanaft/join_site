@@ -1,0 +1,5 @@
+.idea/*
+mysite/supercustomer/migrations/*
+mysite/Order/migrations/*
+__init__.py
+db.sqlite3
