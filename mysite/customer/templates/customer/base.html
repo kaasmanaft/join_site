@@ -22,8 +22,14 @@
 <header class="site-header">
 
 </header>
+<nav class="nav nav-pills flex-column flex-sm-row">
+  <a class="flex-sm-fill text-sm-center nav-link active" href="{% url 'user_order' %}">Home</a>
+  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'register' %}">REGISTER USER</a>
 
+  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'su_register' %}">REGISTER SUPERUSER</a>
 
+  <a class="flex-sm-fill text-sm-center nav-link disabled" href="#">Disabled</a>
+</nav>
 
 <div class="container-fluid">
   <div class="row">
@@ -47,7 +53,9 @@
     {% if user.is_authenticated %}
     <div class="container-fluid">
     <div class="col ">
+        {% if user.su_additional.uuid_for_reg %}
         <div class="col-sm-8"><a href="{% url 'register_uuid' user.su_additional.uuid_for_reg  %}">Add NEW User?</a> </div>
+        {% endif %}
         <div class="col-sm-12" align="right">{{user.su_additional.uuid_for_reg}}</div>
         <div class="col-sm-12" align="right">You are logged as {{user.username}}</div>
 

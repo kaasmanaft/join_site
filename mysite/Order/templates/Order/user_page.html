@@ -4,10 +4,11 @@
 {#<h1>it exist</h1>#}
 {#{% endif %}#}
 
-    {% for row in dbd %}
+    {% for row in orders %}
         <div class="border border-primary">
           <div class="col">
           <a class="btn btn-info" href="{% url 'item' row.id %}">Detail</a>
+          {{ row.id }}
            {% for layer in row.agg_photos %}
            <img class="ml-4" src="{{ row.base_photo_url }}{{layer}}/140.jpg">
             {% endfor %}
@@ -15,12 +16,14 @@
               <div class="col col-xl-auto"><b>Name</b> {{ row.name }}</div>
              <div class="col-xl-auto"> <b>Price</b> {{ row.price }}</div>
           </div>
-          {% if user_order_quantity %}
+          {% if row.user_order_quantity %}
             <div class="row">
                 <div class="col">
-                    Your order is  {{ user_order_quantity }}
+                    Your order is  {{ row.user_order_quantity }}
                 </div>
-
+                <div class="col">
+                   Total order is  {{ row.total_order_quantity }}
+                </div>
             </div>
             {% endif %}
           </div>
@@ -30,7 +33,7 @@
         <label for="amount">number of goods </label>
         <input id="amount" type="number"  name="quantity" value="1">
         <input id="id" type="hidden"  name="id" value="{{ row.id }}" >
-    <button type="submit" class="button btn-success">get</button>
+    <button type="submit" class="button btn-success">Update</button>
     </form>
 
     {% endfor %}
