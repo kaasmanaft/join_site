@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'product.apps.ProductConfig',
     'customer.apps.CustomerConfig',
     'supercustomer.apps.SupercustomerConfig',
     'Order.apps.OrderConfig',
@@ -79,18 +80,28 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    },
-    'goods': {
         'ENGINE':'django.db.backends.postgresql',
-        'NAME': 'some_name',
+        'NAME': 'django_db',
         'USER': 'postgres',
         'PASSWORD': 'pass123',
         'HOST': 'localhost',
         'PORT': '4444'
              }
 }
+# }DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     },
+#     'goods': {
+#         'ENGINE':'django.db.backends.postgresql',
+#         'NAME': 'some_name',
+#         'USER': 'postgres',
+#         'PASSWORD': 'pass123',
+#         'HOST': 'localhost',
+#         'PORT': '4444'
+#              }
+# }
 
 # HOST = 'localhost:4444'
 

@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 from django.db import connections
 from django.db.models import Sum
 from django.contrib import messages
-from django.db.models import  Count
+from django.db.models import Count
+from django.core.paginator import Paginator
+
 def dictfetchall(cursor) -> List:
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
@@ -36,13 +38,20 @@ def db_goods_view_tmp(request, limit=10):
         print(request.body)
         return redirect('customers')
     else:
-        with connections['goods'].cursor() as cursor:
+        # print(request.GET.dict())
+        if 'page_limit' in request.GET.dict():
+            page_limit = request.GET.dict()['page_limit']
+        else:
+            page_limit = 10
+    with connections['goods'].cursor() as cursor:
             cursor.execute('SELECT id,agg_photos,base_photo_url, description,min_qty, name, price FROM item '
-                           'where agg_photos is not null LIMIT %s;',
+                           'where agg_photos is not null  ORDER BY name LIMIT %s;',
                            [limit])
             dbd = dictfetchall(cursor)
-
-            return render(request, template_name='Order/db.html', context={'dbd': dbd})
+            paginator = Paginator(dbd, page_limit)
+            page = request.GET.get('page')
+            data_page = paginator.get_page(page)
+            return render(request, template_name='Order/db.html', context={'dbd': data_page})
 
 
 def get_item_info(item_id: int) -> Dict:
@@ -101,13 +110,19 @@ def save_order(request):
         return redirect('db', 30)
 
 
-def show_goods_by_id(request, id=0):
-    dbd = get_description_by_id(id)
+@login_required()
+def delete_order(request):
+    pass
+
+
+def show_goods_by_id(request, item_id=0):
+    dbd = get_description_by_id(item_id)
     context = {'dbd': dbd}
     if request.user:
         try:
-            order = Order.objects.get(item_id__exact=int(id), user__username__exact=request.user)
+            order = Order.objects.get(item_id__exact=int(item_id), user__username__exact=request.user)
             context = {'dbd': dbd, 'user_order_quantity': order.quantity}
         except Order.DoesNotExist:
             context = {'dbd': dbd, 'quantity': 1}
+
     return render(request, template_name='Order/db.html', context=context)

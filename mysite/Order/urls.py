@@ -8,5 +8,5 @@ urlpatterns = [
     path('save/', save_order, name='save_order'),
     path('user/', show_user_orders, name='user_order'),
     path('db/<int:limit>/', db_goods_view_tmp, name='db'),
-    path('item/<int:id>/', show_goods_by_id, name='item'),
+    path('item/<int:item_id>/', show_goods_by_id, name='item'),
               ]
