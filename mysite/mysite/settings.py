@@ -25,8 +25,7 @@ SECRET_KEY = 'mf0jz8@ip1q!0(k6+)5udhmz=iclse10229khb645fy=gs$$hs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://ceac3c9a.ngrok.io',
-                 'ceac3c9a.ngrok.io',]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -143,17 +142,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static_dev'),
-)
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = 'top'
+LOGIN_REDIRECT_URL = 'customers'
 
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}

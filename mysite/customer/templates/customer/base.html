@@ -11,14 +11,6 @@
 {#    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">#}
     <link rel="stylesheet" type="text/css" href="{% static 'customer/bootstrap.min.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'customer/main.css' %}">
-{#    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>#}
-<!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-   <script type="text/javascript" src="{% static 'customer/menu.js' %}"></script>
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
    {% if title %}
     <title>{{title}}</title>
     {% else %}
@@ -30,60 +22,19 @@
 <header class="site-header">
 
 </header>
-{#<nav class="nav nav-pills flex-column flex-sm-row">#}
-{#  <a class="flex-sm-fill text-sm-center nav-link active" href="{% url 'user_order' %}">Home</a>#}
-{#  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'category_view' 'top' %}">SHOW DB</a>#}
-{#  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'su_register' %}">REGISTER SUPERUSER</a>#}
-{#  <a class="flex-sm-fill text-sm-center nav-link disabled" href="#">Disabled</a>#}
-{#</nav>#}
+<nav class="nav nav-pills flex-column flex-sm-row">
+  <a class="flex-sm-fill text-sm-center nav-link active" href="{% url 'user_order' %}">Home</a>
+  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'register' %}">REGISTER USER</a>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-     <form class="form-inline my-2 my-lg-0">
-<div class="input-group">
-              <input type="text" style="width: 200px" class="form-control border-right-0 border-info" placeholder="...">
-              <div class="input-group-append">
-                <button class="btn btn-outline-info border-left-0" type="button">Поиск</button>
-              </div>
-            </div>
-    </form>
+  <a class="flex-sm-fill text-sm-center nav-link" href="{% url 'su_register' %}">REGISTER SUPERUSER</a>
 
-
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-       <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Категория
-        </a>
-        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            {% for cat in menu %}
-                <a class = 'dropdown-item' href="{{ cat.get_abs_url }}" title="{{ cat.get_abs_url }}" ><img src="{{ cat.icon }}" class="cat_icon" >{{ cat.name }}</a>
-            {% endfor %}
-        </div>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'user_order' %}">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{% url 'su_register' %}">REGISTER SUPERUSER</a>
-      </li>
-
-      <li class="nav-item">
-        <a class="nav-link " href="{% url 'category_view' 'top' %}">SHOW DB</a>
-      </li>
-    </ul>
-  </div>
+  <a class="flex-sm-fill text-sm-center nav-link disabled" href="#">Disabled</a>
 </nav>
 
-
-
-
 <div class="container-fluid">
-    <div class="row">
-    <div class="col-xl-10" style="background-color:white;">
+  <div class="row">
+    <div class="col-sm-2" style="background-color:lavender;">Menu</div>
+    <div class="col-sm-8" style="background-color:white;">
 
         {% if messages %}
             {% for message in messages %}
@@ -92,96 +43,50 @@
                 </div>
             {% endfor %}
         {% endif %}
-        {% spaceless %}
-<!--  Pagination  -->
-             <div class="container-fluid ">
-                      {% if page %}
-                            <nav aria-label="Page navigation " class="nav mt-3">
-                      <ul class="pagination ml-auto">
-                          {% if page.has_previous %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.previous_page_number }}" tabindex="-1">Previous</a>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Previous</a>
-                          {% endif %}
-                              </li>
-                    {% for num_page in page.paginator.page_range %}
-                    {% if num_page == page.number %}
-                       <li class="page-item active">
-                       <a class="btn btn-info" href="#">{{ num_page }} <span class="sr-only">(current)</span></a>
-                       </li>
-                    {% elif num_page > page.number|add:'-3' and num_page < page.number|add:'3'%}
-                         <li class="page-item">
-                          <a class="page-link" href="?page={{ num_page }}" >{{ num_page }}</a>
-                         </li>
-                    {% endif %}
-                    {% endfor %}
-                          {% if page.has_next %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.next_page_number }}">Next</a> </li>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Next</a>
-                              </li>
-                          {% endif %}
-                      </ul>
-                    </nav>
-                     {% endif %}
-              </div>
-<!--  Pagination  -->
-        {% endspaceless %}
 
-    <!-- Breadcrumb -->
-{% if breadcrumbs %}
-    <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'top' %}">Всё</a></li>
-              {% for crumb in breadcrumbs %}
-                  {% if forloop.last %}
-                  <li class="breadcrumb-item active" aria-current="page">{{ crumb.name }}</li>
-                  {% else %}
-                      <li class="breadcrumb-item"><a href="{{crumb.get_abs_url}}">{{ crumb.name }}</a></li>
-                  {% endif %}
-              {% endfor %}
-          </ol>
-    </nav>
-{% endif %}
-    <!-- Breadcrumb -->
         {% block content %}{% endblock %}
 
     </div>
-   <!--main -->
-    <!--login -->
     <div class="col-sm-2" style="background-color:lavender;">
-        <div class="container-fluid">
-                {% if user.is_authenticated %}
-                        <div class="col ">
-                            {% if user.su_additional.uuid_for_reg %}
-                            <div class="col-sm-8"><a href="{% url 'register_uuid' user.su_additional.uuid_for_reg  %}">Add NEW User?</a> </div>
-                            {% endif %}
-                            <div class="col-sm-12" align="right">{{user.su_additional.uuid_for_reg}}</div>
-                            <div class="col-sm-12" align="right">You are logged as {{user.username}}</div>
-                        </div>
-                                <div class="row">
-                                    <div class="col-sm-8"> </div>
-                                    <div class="col-sm-2" align="right"></div>
-                                    <div class="col-sm-2" align="right"><a href="{% url 'logout' %}">Logout</a></div>
-                                </div>
-                {% else %}
-                         <div class="row ">
-                            <div class="col-sm-8">
-                                <a href="{% url 'login' %}">Have a login?</a>
-                            </div>
-                        </div>
-                {% endif %}
-         </div>
-   </div>
-    <!--login -->
+
+        login and info
+    {% if user.is_authenticated %}
+    <div class="container-fluid">
+    <div class="col ">
+        {% if user.su_additional.uuid_for_reg %}
+        <div class="col-sm-8"><a href="{% url 'register_uuid' user.su_additional.uuid_for_reg  %}">Add NEW User?</a> </div>
+        {% endif %}
+        <div class="col-sm-12" align="right">{{user.su_additional.uuid_for_reg}}</div>
+        <div class="col-sm-12" align="right">You are logged as {{user.username}}</div>
+
+    </div>
+    <div class="row">
+       <div class="col-sm-8"> </div>
+        <div class="col-sm-2" align="right"></div>
+        <div class="col-sm-2" align="right"><a href="{% url 'logout' %}">Logout</a></div>
+    </div>
+    {% else %}
+        <div class="row ">
+        <div class="col-sm-8"><a href="{% url 'login' %}">Have a login?</a> </div>
+
+    </div>
+
+
 </div>
+{% endif %}
+
+    </div>
+
+
+  </div>
+
+
 </div>
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
 </body>
 </html>
-
-
-

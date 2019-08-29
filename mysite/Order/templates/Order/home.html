@@ -1,12 +1,13 @@
 {% extends 'customer/base.html' %}
 {% block content %}
         {% for order in object_list %}
-            <li>{{ order.item_id}}</li>
+            <li>{{ order.item_name}}</li>
             <li>{{ order.user}}</li>
             <li>{{ order.price}}</li>
-            <li>{{ order.quantity}}</li>
+            <li>{{ order.amount}}</li>
 <hr>
         {% endfor %}
 
-
+        <a href="{% url 'register' %}">REGISTER USER</a>
+        <a href="{% url 'su_register' %}">REGISTER SUPERUSER</a>
 {% endblock content %}

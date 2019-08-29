@@ -4,36 +4,25 @@
 {#<h1>it exist</h1>#}
 {#{% endif %}#}
 
-
-{#{% for order in orders %}#}
-{##}
-{#    {{ order.total_order_quantity}}#}
-{#    {{ order.user_order_quantity}}#}
-{#    {{ order.item.object.name}}#}
-{##}
-{##}
-{#{% endfor %}#}
     {% for row in orders %}
         <div class="border border-primary">
-
           <div class="col">
           <a class="btn btn-info" href="{% url 'item' row.id %}">Detail</a>
-
+          {{ row.id }}
            {% for layer in row.agg_photos %}
            <img class="ml-4" src="{{ row.base_photo_url }}{{layer}}/140.jpg">
-
             {% endfor %}
           <div class="row">
               <div class="col col-xl-auto"><b>Name</b> {{ row.name }}</div>
              <div class="col-xl-auto"> <b>Price</b> {{ row.price }}</div>
           </div>
-          {% if row.order_description %}
+          {% if row.user_order_quantity %}
             <div class="row">
                 <div class="col">
-                    Your order is  {{ row.order_description.user }}
+                    Your order is  {{ row.user_order_quantity }}
                 </div>
                 <div class="col">
-                   Total order is  {{ row.order_description.total }}
+                   Total order is  {{ row.total_order_quantity }}
                 </div>
             </div>
             {% endif %}

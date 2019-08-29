@@ -22,16 +22,12 @@ class Order(models.Model):
 
     def is_valid(self):
         if int(self.price) <= 0:
-            print(f'wrong price {self.price}')
             return False
         if int(self.quantity) <= 0:
-            print('quantity is wrong')
             return False
         if int(self.item_id) <= 0:
-            print('Some thing wrong with id')
             return False
         if self.user is None:
-            print('Some thing wrong with user')
             return False
         return True
 

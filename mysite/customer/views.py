@@ -1,6 +1,4 @@
 import uuid as UUID
-
-from django.contrib.auth.handlers.modwsgi import groups_for_user
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
