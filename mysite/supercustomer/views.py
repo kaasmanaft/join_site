@@ -15,14 +15,15 @@ def su_register(request):
             form.save()
             su_username = form.cleaned_data.get('username')
             group_name = su_username
-            try:
-                group = Group.objects.create(name=group_name)
-            except IntegrityError as exc:
-                group_name = group_name+'_s'
-                group = Group.objects.create(name=group_name)
-                print(f"{exc.args} <--------------------------------------------------")
+            # try:
+            #     group = Group.objects.create(name=group_name)
+            # except IntegrityError as exc:
+            #     group_name = group_name+'_s'
+            #     group = Group.objects.create(name=group_name)
+            #     print(f"{exc.args} <--------------------------------------------------")
+            group = Group.objects.create(name=group_name)
             user = User.objects.get_by_natural_key(username=su_username)
-            user.groups.add(Group.objects.get_by_natural_key(name=group_name))
+            user.groups.add(group)
             su_setting = su_additional(user=user,uuid_for_reg=UUID.uuid4())
             su_setting.save()
             return redirect('customers')

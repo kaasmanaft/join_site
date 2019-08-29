@@ -1,4 +1,4 @@
-body {
+ body {
      font-family: Geneva, Arial, Helvetica, sans-serif;
      background: #fafafa;
   color: #333333;
@@ -8,3 +8,46 @@ body {
    p {
    font-family: Geneva, Arial, Helvetica, sans-serif;
    }
+.cat_icon {
+    width: 30px;
+    height: auto;
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  height: 100px;
+  width: 100px;
+  outline: black;
+  background-size: 100%, 100%;
+  border: none;
+  background-image: none;
+}
+
+.carousel-control-next-icon:after
+{
+  content: '>';
+  font-size: 55px;
+  color: #ff785f;
+}
+
+.carousel-control-prev-icon:after {
+  content: '<';
+  font-size: 55px;
+  color: #ff785f;
+}
+.carousel-indicators li {
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  background-color: #ff785f;
+}
+.amount_number {
+    width: 50px;
+
+}
+.carousel-inner > .carousel-item > img {
+    width: 300px;
+    height: auto;
+}
+.carousel-inner > .carousel-item {
+   text-align: center;
+}
