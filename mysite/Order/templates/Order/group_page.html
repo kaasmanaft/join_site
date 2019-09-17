@@ -1,0 +1,238 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+
+
+ <table class="table">
+  <thead class="thead-light">
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Название товара</th>
+      <th scope="col">Мин кол-во</th>
+      <th scope="col">Цена</th>
+      <th scope="col">Кол-во</th>
+      <th scope="col">Общая сумма</th>
+    </tr>
+  </thead>
+  <tbody>
+   </tbody>
+
+</table>
+
+
+    <div id="accordion">
+
+  {% for group_order,total_price,orders in group_orders %}
+  <div class="card">
+    <div class="card-header" id="headingOne">
+{#      <h5 class="mb-0">#}
+        <button class="btn btn-link" data-toggle="collapse" data-target="#collaps{{ forloop.counter}}" aria-expanded="true" aria-controls="collapseOne">
+
+<table class="table">
+  <tbody>
+
+    <tr>
+      <th scope="row">{{ forloop.counter}}</th>
+      <td>{{ group_order.item.name }}</td>
+      <td>
+         {% if group_order.item.min_qty %}
+          {{ group_order.item.min_qty }}
+          {% else %}
+          1
+          {% endif %}
+      </td>
+      <td>{{ group_order.item.price }}</td>
+      <td>{{ group_order.total_quantity }}</td>
+      <td>{{ total_price }}</td>
+    </tr>
+
+    </tbody>
+
+</table>
+        </button>
+{#      </h5>#}
+    </div>
+
+    <div id="collaps{{ forloop.counter}}" class="collapse " aria-labelledby="headingOne" data-parent="#accordion">
+      <div class="card-body">
+      <table class="table">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Пользователь</th>
+              <th scope="col">Кол-во</th>
+              <th scope="col">Общая сумма</th>
+              <th scope="col">Дата заказа</th>
+              <th scope="col">Дата доставки</th>
+              <th scope="col">Состояние</th>
+              <th scope="col">Действие</th>
+
+            </tr>
+          </thead>
+          <tbody>
+          {% for order in orders %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.get_total_price }}</td>
+                <td>{{ order.order_date }}</td>
+                <td>{{ order.delivery_date }}</td>
+                <td>
+                    {% if order.status  == 'ACT' %}
+                    <span class="badge badge-pill badge-info">Активный</span>
+                    {% elif order.status  == 'INACT' %}
+                    <span class="badge badge-pill  badge-secondary">Неактивный</span>
+                    {% elif order.status  == 'PAID' %}
+                    <span class="badge badge-pill  badge-success">Оплачен</span>
+                    {% elif order.status  == 'DELIV' %}
+                    <span class="badge badge-pill  badge-warning">Доставка</span>
+
+                    {% endif %}
+                </td>
+                <td>
+                    <input type="checkbox" name="{{ order.id }}" form="action_form" >
+                </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+      </table>
+{#        {% for order in orders %}#}
+{#            {{ order.user.username }}     {{ order.quantity }}      {{ order.get_total_price }}<br>#}
+{#            {% endfor %}#}
+      </div>
+    </div>
+  </div>
+   {% endfor %}
+
+</div>
+
+    {% for od,values in orders_dict.items %}
+        <br>
+        {{ values }}
+{#        {{ orders_dict.values }}#}
+
+{#        {% for order in od %}#}
+{#            {{ order }}#}
+{#            {% endfor %}#}
+    {% endfor %}
+{% endblock %}
+{% block action_form %}
+    <form id="action_form" method="post" action="{% url 'update_orders' %}">
+    {% csrf_token %}
+    <div class="input-group">
+        <select class="custom-select border-right-0 border-danger" name="act">
+          <option selected>____________</option>
+            {% for choice, name in action_list %}
+                     <option value="{{ choice }}">{{ name }}</option>
+            {% endfor %}
+        </select>
+    <input class="btn btn-outline-danger border-left-0" type="submit" value="GO" >
+    </div>
+{##}
+{#                <div class="input-group">#}
+{#              <input type="text" name="search" style="width: 200px" class="form-control border-right-0 border-info" placeholder="...">#}
+{#              <div class="input-group-append">#}
+{#                <button type="submit"  class="btn btn-outline-info border-left-0" >Поиск</button>#}
+{#              </div>#}
+{#            </div>#}
+    </form>
+{% endblock action_form %}
+{% block pagination_top %}
+        {% spaceless %}
+<!--  Pagination  -->
+             <div class="container-fluid ">
+                      {% if page %}
+                            <nav aria-label="Page navigation " class="nav mt-3">
+                      <ul class="pagination ml-auto">
+                          {% if page.5.has_previous %}
+                              <li class="page-item">
+                              <a class="page-link" href="?page={{ page.1 }}" tabindex="-1">Previous</a>
+                          {% else %}
+                              <li class="page-item disabled">
+                              <a class="page-link" href="#">Previous</a>
+                          {% endif %}
+                              </li>
+                            <li class="page-item">
+                          <a class="page-link" href="?page={{ page.0 }}" >{{ page.0 }}</a>
+                         </li>
+
+                         <li class="page-item">
+                          <a class="page-link" href="?page={{ page.1 }}" >{{ page.1 }}</a>
+                         </li>
+
+                       <li class="page-item active">
+                       <a class="btn btn-info" href="#">{{ page.2 }} <span class="sr-only">(current)</span></a>
+                       </li>
+                       <li class="page-item">
+                          <a class="page-link" href="?page={{ page.3 }}" >{{ page.3 }}</a>
+                         </li>
+                         <li class="page-item">
+                          <a class="page-link" href="?page={{ page.4 }}" >{{ page.4 }}</a>
+                         </li>
+
+
+                          {% if page.5.has_next %}
+                              <li class="page-item">
+                              <a class="page-link" href="?page={{ page.3 }}">Next</a> </li>
+                          {% else %}
+                              <li class="page-item disabled">
+                              <a class="page-link" href="#">Next</a>
+                              </li>
+                          {% endif %}
+                      </ul>
+                    </nav>
+                     {% endif %}
+              </div>
+<!--  Pagination  -->
+        {% endspaceless %}
+{% endblock pagination_top %}
+
+{% block pagination_bottom %}
+        {% spaceless %}
+<!--  Pagination  -->
+             <div class="container-fluid ">
+                      {% if page %}
+                            <nav aria-label="Page navigation " class="nav mt-3">
+                      <ul class="pagination ml-auto">
+                          {% if page.5.has_previous %}
+                              <li class="page-item">
+                              <a class="page-link" href="?page={{ page.1 }}" tabindex="-1">Previous</a>
+                          {% else %}
+                              <li class="page-item disabled">
+                              <a class="page-link" href="#">Previous</a>
+                          {% endif %}
+                              </li>
+                            <li class="page-item">
+                          <a class="page-link" href="?page={{ page.0 }}" >{{ page.0 }}</a>
+                         </li>
+
+                         <li class="page-item">
+                          <a class="page-link" href="?page={{ page.1 }}" >{{ page.1 }}</a>
+                         </li>
+
+                       <li class="page-item active">
+                       <a class="btn btn-info" href="#">{{ page.2 }} <span class="sr-only">(current)</span></a>
+                       </li>
+                       <li class="page-item">
+                          <a class="page-link" href="?page={{ page.3 }}" >{{ page.3 }}</a>
+                         </li>
+                         <li class="page-item">
+                          <a class="page-link" href="?page={{ page.4 }}" >{{ page.4 }}</a>
+                         </li>
+
+
+                          {% if page.5.has_next %}
+                              <li class="page-item">
+                              <a class="page-link" href="?page={{ page.3 }}">Next</a> </li>
+                          {% else %}
+                              <li class="page-item disabled">
+                              <a class="page-link" href="#">Next</a>
+                              </li>
+                          {% endif %}
+                      </ul>
+                    </nav>
+                     {% endif %}
+              </div>
+<!--  Pagination  -->        {% endspaceless %}
+{% endblock pagination_bottom %}
+
