@@ -25,9 +25,9 @@ SECRET_KEY = 'mf0jz8@ip1q!0(k6+)5udhmz=iclse10229khb645fy=gs$$hs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://ceac3c9a.ngrok.io',
-                 'ceac3c9a.ngrok.io',]
+ALLOWED_HOSTS = []
 
+INTERNAL_IPS =['127.0.0.1',]
 
 # Application definition
 
@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar'
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'mysite.urls'

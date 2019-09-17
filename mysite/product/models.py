@@ -146,7 +146,7 @@ class CategoryManager(models.Manager):
         else:
             node_in_pass_mask = str(node_object.id) + '.'
             descendants = Category.objects.all().filter(level__gt=node_object.level,
-                                                        path__istartswith=node_in_pass_mask).values_list('id', flat=True)
+                                                        path__startswith=node_in_pass_mask).values_list('id', flat=True)
         return descendants
 
 
@@ -171,10 +171,7 @@ class Category(models.Model):
 
     def get_bread_crumbs(self):
         path = self.path.split('.')
-        crumbs_list = []
-        for crumb in path[-3:]:
-            crumb = Category.objects.get(pk=int(crumb))
-            crumbs_list.append(crumb)
+        crumbs_list = Category.objects.filter(pk__in=path[-3:])
         return crumbs_list
 
 

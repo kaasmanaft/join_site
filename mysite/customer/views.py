@@ -1,12 +1,7 @@
 import uuid as UUID
-
-from django.contrib.auth.handlers.modwsgi import groups_for_user
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
 from .forms import NewCreationForm
-from django.contrib import messages
-from .models import Employee
 from supercustomer.models import su_additional
 
 def customer_view(request):
@@ -23,7 +18,6 @@ def register(request, uuid):
             uuid = form.cleaned_data.get('uuid')
             su = su_additional.objects.filter(uuid_for_reg=uuid).first()
             group = su.user.groups.first()
-            # group = su_additional.objects.filter(uuid_for_reg=uuid).first()
             user = User.objects.filter(username=username).first()
             user.groups.add(group)
             su.uuid_for_reg = UUID.uuid4()

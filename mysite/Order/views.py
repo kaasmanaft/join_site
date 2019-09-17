@@ -1,11 +1,14 @@
 from typing import List, Dict
+from collections import defaultdict
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
-from .models import Order
+from .models import Order, GroupOrder
 from product.models import Item, Category,ItemCategory
-from django.db.models import Sum
+from django.db import transaction
 from django.contrib import messages
 from django.core.paginator import Paginator
+from product.views import chunks, get_query, timer
 
 def dictfetchall(cursor) -> List:
     "Return all rows from a cursor as a dict"
@@ -15,15 +18,7 @@ def dictfetchall(cursor) -> List:
         for row in cursor.fetchall()
           ]
 
-#
-# def get_description_by_id(it: int) -> List:
-#     return Item.objects.get(pk=it)
-#
 
-def total_number_orders_by_id(itemid , user) :
-    count = Order.objects.filter(item_id__exact=itemid, user__groups__exact=user.groups.first())\
-        .aggregate(total_order_quantity=Sum('quantity'))#, user__groups__contains=user.groups.first())#.annotate(cun=Count('item_id'))
-    return count['total_order_quantity']
 
 
 def db_goods_view_tmp(request, limit=10):
@@ -46,54 +41,163 @@ def db_goods_view_tmp(request, limit=10):
         if category_id:
             children = Category.objects.get_children(category_id).values('id', 'name', 'slug')
             descendants = Category.objects.get_descendants_id(category_id)
-            # print(children)
-            # print(f'descendants len {len(descendants)}   {descendants} category_id is {category_id}')
             items_in_category = ItemCategory.objects.all().filter(category_id__in=descendants).values_list('item_id', flat=True)
             dbd = Item.objects.all().filter(pk__in=items_in_category).order_by('id')
-            # print(f'items_in_category len {len(items_in_category)}   {items_in_category} category_id is {category_id}')
         else:
             children = Category.objects.get_level(1).values('id', 'name', 'slug')
-            # print(children)
             dbd = Item.objects.all().exclude(agg_photos__isnull=True, balance='0', price__lte=0.0).order_by('-price')[
                    0:limit]
-
         paginator = Paginator(dbd, page_limit)
         obj = paginator.get_page(page)
         context = {'obj': obj, 'quantity': 1, 'menu': children}
         return render(request, template_name='Order/db.html', context=context)
 
+#
+# @login_required()
+# def show_group_orders(request):
+#     if request.user.has_perm('Order.view_grouporder'):
+#         group_name = request.user.groups.first()
+#         group = get_object_or_404(Group, name=group_name)
+#         group_orders = GroupOrder.objects.filter(owner=group).select_related('item')
+#         orders_list = []
+#         summ = 0
+#         for group_order in group_orders:
+#             total_price = round(group_order.item.price*group_order.total_quantity,2)
+#             orders = Order.objects.filter(user__groups__exact=group_name, item_id=group_order.item_id).select_related('user')
+#             summ += total_price
+#             orders_list.append([group_order, total_price, orders])
+#         context = {'group_orders': orders_list, 'summ': round(summ, 2), 'action_list': Order.order_status}
+#         return render(request, template_name='Order/group_page.html', context=context)
+#
+#     else:
+#         return redirect('top')
+#
+@timer
+@login_required()
+def show_group_orders(request):
+    if request.user.has_perm('Order.view_grouporder'):
+        group_name = request.user.groups.first()
+        group = get_object_or_404(Group, name=group_name)
+        orders = Order.objects.filter(user__groups__exact=group_name).order_by('item_id')\
+            .values('item_id', 'user__username', 'status', 'quantity')
+        group_orders = GroupOrder.objects.filter(owner=group).order_by('item_id').values('item_id', 'total_quantity')
+        print(group_orders)
+        orders_dict = {}
+        for order in orders:
+            try:
+                orders_dict[order['item_id']].append([order['user__username'], order['status'], order['quantity'], ])
+            except KeyError:
+                orders_dict[order['item_id']] = [[order['user__username'], order['status'], order['quantity'], ]]
 
+        print(orders_dict)
+        orders_list = []
+        summ = 0
+        for group_order in group_orders:
+            total_price = round(group_order.item.price*group_order.total_quantity,2)
+            orders = Order.objects.filter(user__groups__exact=group_name, item_id=group_order.item_id).select_related('user')
+            summ += total_price
+            orders_list.append([group_order, total_price, orders])
+        context = {'group_orders': orders_list, 'summ': round(summ, 2), 'action_list': Order.order_status
+            , 'orders_dict':orders_dict}
+        return render(request, template_name='Order/group_page.html', context=context)
+
+    else:
+        return redirect('top')
+
+
+@login_required()
+def update_orders(request):
+    if request.method == 'POST':
+        if request.user.has_perm('Order.change_grouporder') and request.user.has_perm('Order.change_order'):
+          print('------------------------------------------------')
+          update_list = []
+          for key in request.POST.keys():
+              if request.POST[key] == 'on':
+                  update_list.append(key)
+          Order.objects.select_for_update().filter(id__in=update_list).update(status=request.POST['act'])
+          print('------------------------------------------------')
+          return redirect('group_order')
+        else:
+            return redirect('top')
+    else:
+        return redirect('top')
 
 
 @login_required()
 def show_user_orders(request):
-    orders = Order.objects.filter(user__username__exact=request.user).values_list('item_id', 'quantity')
-    order_list = []
-    print(f'orders type id {type(orders)}')
-    order_description = {}
-    for item_id, user_order_quantity in orders:
-
-        total_order_quantity = total_number_orders_by_id(item_id, request.user)
-        order = Item.objects.get(pk=item_id)
-        order.order_description = {'total': total_order_quantity, 'user': user_order_quantity}
-        order_list.append(order)
-    context = {'orders': order_list}
-    print(context)
+    orders = Order.objects.filter(user=request.user).select_related('item_id', 'group_order')
+    orders = chunks(orders, 4, len(orders))
+    context = {'user_orders': orders}
     return render(request, template_name='Order/user_page.html', context=context)
+
+#
+# @login_required()
+# def show_user_orders(request):
+#     orders = Order.objects.filter(user__username__exact=request.user).values_list('item_id', 'quantity')
+#     # orders = Order.objects.filter(user__username__exact=request.user).values_list('item_id', 'quantity')
+#     get_query()
+#     print(f'order len {len(orders)} {orders.values_list}')
+#     order_list = []
+#     order_description = {}
+#     for item_id, user_order_quantity in orders:
+#      orders_M1 = Order.objects.filter(user__groups__exact = m1.groups.first()).select_related('item_id')
+
+#         total_order_quantity = total_number_orders_by_id(item_id, request.user)
+#         order = Item.objects.get(pk=item_id)
+#         order.order_description = {'total': total_order_quantity, 'user': user_order_quantity}
+#         order_list.append(order)
+#     order_list = chunks(order_list, 4, len(order_list))
+#     context = {'orders': order_list}
+#     print(context)
+#     return render(request, template_name='Order/user_page.html', context=context)
+#
 
 @login_required()
 def save_order(request):
     print(request.POST)
     if request.method == "POST":
-        item = int(request.POST['id'])
+        item = Item.objects.get(pk=int(request.POST['id']))
         quantity = int(request.POST['quantity'])
         try:
-            order = Order.objects.get(item_id__exact=item, user__username__exact=request.user)
+            order = Order.objects.get(item_id=item, user__username=request.user)
             if quantity > 0:
                 order.quantity = order.quantity + quantity
                 messages.add_message(request, messages.SUCCESS, "Order has been updated")
                 order.save()
+                gr_ord = order.group_order
+                gr_ord.get_total_quantity()
+                gr_ord.save()
                 print(order)
+            else:
+                messages.add_message(request, messages.ERROR, "Wrong number of goods")
+
+        except Order.DoesNotExist:
+            new_order = Order()
+            new_order.item_id = item
+            new_order.user = request.user
+            new_order.quantity = quantity
+            new_order.price = item.price
+            new_order.is_partner_goods = item.is_remote_store
+            if new_order.is_valid():
+                new_order.save()
+                return redirect('top')
+            else:
+                return redirect('item', new_order.item_id_id)
+        return redirect('item', item.id)
+    else:
+        return redirect('top')
+
+@login_required()
+def update_order(request):
+    if request.method == "POST":
+        item = int(request.POST['id'])
+        quantity = int(request.POST['quantity'])
+        try:
+            order = Order.objects.get(item_id__exact=Item.objects.get(pk=item), user__username__exact=request.user)
+            if quantity > 0:
+                order.quantity = order.quantity + quantity
+                messages.add_message(request, messages.SUCCESS, "Order has been updated")
+                order.save()
             else:
                 messages.add_message(request, messages.ERROR, "Wrong number of goods")
 
