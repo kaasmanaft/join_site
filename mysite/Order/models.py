@@ -1,5 +1,7 @@
 from django.db import models
 from django.db.models import Sum
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.contrib.auth.models import User, Group
 from django.utils import timezone
 from product.models import Item
@@ -18,7 +20,7 @@ class Order(models.Model):
     item_id = models.ForeignKey(Item, on_delete=models.CASCADE, null=True)
     group_order = models.ForeignKey('GroupOrder', on_delete=models.CASCADE, null=True)
     price = models.FloatField()
-    price = models.FloatField()
+    total_price = models.FloatField(null=True)
     quantity = models.PositiveIntegerField()
     status = models.CharField(choices=order_status, default='ACT', max_length=5)
     order_date = models.DateField(default=timezone.now)
@@ -52,8 +54,9 @@ class Order(models.Model):
         self.group_order = go
         return True
 
-    def get_total_price(self):
-        return round(self.quantity * self.price,2)
+    def save(self):
+        self.total_price = round(self.quantity * self.price,2)
+        super(Order,self).save()
 
 
 class GroupOrder(models.Model):
