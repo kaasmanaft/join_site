@@ -56,7 +56,7 @@ class Order(models.Model):
 
     def save(self):
         self.total_price = round(self.quantity * self.price,2)
-        super(Order,self).save()
+        super(Order, self).save()
 
 
 class GroupOrder(models.Model):

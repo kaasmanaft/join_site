@@ -17,13 +17,13 @@ class Command(BaseCommand):
         self.stdout.write(str(super_user_list))
         su1_users = User.objects.filter(groups__exact=super_user_list[0].groups.first())
         # self.stdout.write(str(su1))
-        count=0
+        count = 0
         items_list = []
         while True:
             rand_item_pk = random.randint(9999, 999999)
             try:
                 item = Item.objects.get(pk=rand_item_pk)
-                count+=1
+                count += 1
                 items_list.append(item)
             except Item.DoesNotExist:
                 pass

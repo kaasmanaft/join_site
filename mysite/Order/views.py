@@ -1,5 +1,5 @@
 from typing import List, Dict
-from collections import defaultdict
+import datetime
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import Group
 from django.contrib.auth.decorators import login_required
@@ -78,28 +78,21 @@ def show_group_orders(request):
     if request.user.has_perm('Order.view_grouporder'):
         group_name = request.user.groups.first()
         group = get_object_or_404(Group, name=group_name)
-        orders = Order.objects.filter(user__groups__exact=group_name).order_by('item_id')\
-            .values('item_id', 'user__username', 'status', 'quantity')
-        group_orders = GroupOrder.objects.filter(owner=group).order_by('item_id').values('item_id', 'total_quantity')
-        print(group_orders)
+        orders = Order.objects.filter(user__groups__exact=group_name).order_by('user')\
+            .values_list('item_id', 'user__username', 'status', 'quantity','id', 'order_date', 'delivery_date','total_price')
+        group_orders = GroupOrder.objects.filter(owner=group).order_by('owner')\
+            .values('item_id', 'item_id__name','item_id__price','item_id__min_qty','total_quantity')
         orders_dict = {}
         for order in orders:
             try:
-                orders_dict[order['item_id']].append([order['user__username'], order['status'], order['quantity'], ])
+                orders_dict[order[0]].append(order[1:])
             except KeyError:
-                orders_dict[order['item_id']] = [[order['user__username'], order['status'], order['quantity'], ]]
-
-        print(orders_dict)
-        orders_list = []
-        summ = 0
-        for group_order in group_orders:
-            total_price = round(group_order.item.price*group_order.total_quantity,2)
-            orders = Order.objects.filter(user__groups__exact=group_name, item_id=group_order.item_id).select_related('user')
-            summ += total_price
-            orders_list.append([group_order, total_price, orders])
-        context = {'group_orders': orders_list, 'summ': round(summ, 2), 'action_list': Order.order_status
-            , 'orders_dict':orders_dict}
-        return render(request, template_name='Order/group_page.html', context=context)
+                orders_dict[order[0]] = [order[1:]]
+        for order_group in group_orders:
+            order_group['orders'] = orders_dict[order_group['item_id']]
+        action = Order.order_status+[('DEL', 'delete')]
+        context = {'group_orders': group_orders, 'action_list': action}
+        return render(request, template_name='Order/group_page_tmp.html', context=context)
 
     else:
         return redirect('top')
@@ -109,14 +102,47 @@ def show_group_orders(request):
 def update_orders(request):
     if request.method == 'POST':
         if request.user.has_perm('Order.change_grouporder') and request.user.has_perm('Order.change_order'):
-          print('------------------------------------------------')
-          update_list = []
-          for key in request.POST.keys():
-              if request.POST[key] == 'on':
-                  update_list.append(key)
-          Order.objects.select_for_update().filter(id__in=update_list).update(status=request.POST['act'])
-          print('------------------------------------------------')
-          return redirect('group_order')
+            print('------------------------------------------------')
+            print(request.POST)
+            update_list = []
+            for key in request.POST.keys():
+                if request.POST[key] == 'on':
+                    update_list.append(key)
+            if request.POST['act'] == 'DELIV':
+                try:
+                    delivery_date = datetime.datetime.strptime(request.POST['delivery_date'], '%Y-%m-%d')
+                except ValueError:
+                    text = 'Неверная дата доставки. \n Укажите дату доставки.'
+                    messages.add_message(request,messages.ERROR,text)
+                    return redirect('group_order')
+                if delivery_date <= datetime.datetime.now():
+                    text = 'Неверная дата доставки. \n Доставка не может быть в прошлом.'
+                    messages.add_message(request,messages.ERROR,text)
+                    return redirect('group_order')
+
+                Order.objects.filter(id__in=update_list).update(status=request.POST['act'], delivery_date=request.POST['delivery_date'])
+                text = 'Дата доставки установлена успешно'
+                messages.add_message(request, messages.SUCCESS, text)
+                return redirect('group_order')
+            elif request.POST['act'] == 'DEL':
+                try:
+                    Order.objects.filter(id__in=update_list).delete()
+                except :
+                    text = 'Неверная дата доставки. \n Доставка не может быть в прошлом.'
+                    messages.add_message(request,messages.ERROR,text)
+                    return redirect('group_order')
+                text = 'Ордера успешно удалены.'
+                messages.add_message(request,messages.SUCCESS,text)
+            else:
+                try:
+                    Order.objects.filter(id__in=update_list).update(status=request.POST['act'])
+                except:
+                    text = 'Во время обновления ордеров что-то пошло не так '
+                    messages.add_message(request,messages.ERROR,text)
+                    return redirect('group_order')
+                text = 'Ордера обновлены успешно.'
+                messages.add_message(request,messages.SUCCESS,text)
+            return redirect('group_order')
         else:
             return redirect('top')
     else:

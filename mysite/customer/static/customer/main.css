@@ -51,3 +51,7 @@
 .carousel-inner > .carousel-item {
    text-align: center;
 }
+#deliv_date
+{
+    display: none;
+}
