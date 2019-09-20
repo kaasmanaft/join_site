@@ -7,8 +7,6 @@ from django.utils import timezone
 from product.models import Item
 
 
-
-
 class Order(models.Model):
     order_status = [
         ('ACT', 'active'),

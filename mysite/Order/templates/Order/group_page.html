@@ -21,7 +21,7 @@
 
     <div id="accordion">
 
-  {% for group_order,total_price,orders in group_orders %}
+  {% for group_order in group_orders %}
   <div class="card">
     <div class="card-header" id="headingOne">
 {#      <h5 class="mb-0">#}
@@ -32,15 +32,15 @@
 
     <tr>
       <th scope="row">{{ forloop.counter}}</th>
-      <td>{{ group_order.item.name }}</td>
+      <td>{{ group_order.item_id__name }}</td>
       <td>
-         {% if group_order.item.min_qty %}
-          {{ group_order.item.min_qty }}
+         {% if group_order.item__min_qty %}
+          {{ group_order.item__min_qty }}
           {% else %}
           1
           {% endif %}
       </td>
-      <td>{{ group_order.item.price }}</td>
+      <td>{{ group_order.item_id__price }}</td>
       <td>{{ group_order.total_quantity }}</td>
       <td>{{ total_price }}</td>
     </tr>
@@ -69,28 +69,29 @@
             </tr>
           </thead>
           <tbody>
-          {% for order in orders %}
+          {% for order in group_order.orders %}
+
             <tr>
                 <td>{{ forloop.counter }}</td>
-                <td>{{ order.user.username }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.get_total_price }}</td>
-                <td>{{ order.order_date }}</td>
-                <td>{{ order.delivery_date }}</td>
+                <td>{{ order.0 }}</td>
+                <td>{{ order.2 }}</td>
+                <td>{{ order.6 }}</td>
+                <td>{{ order.4 }}</td>
+                <td>{{ order.5 }}</td>
                 <td>
-                    {% if order.status  == 'ACT' %}
+                    {% if order.1  == 'ACT' %}
                     <span class="badge badge-pill badge-info">Активный</span>
-                    {% elif order.status  == 'INACT' %}
+                    {% elif order.1  == 'INACT' %}
                     <span class="badge badge-pill  badge-secondary">Неактивный</span>
-                    {% elif order.status  == 'PAID' %}
+                    {% elif order.1  == 'PAID' %}
                     <span class="badge badge-pill  badge-success">Оплачен</span>
-                    {% elif order.status  == 'DELIV' %}
+                    {% elif order.1  == 'DELIV' %}
                     <span class="badge badge-pill  badge-warning">Доставка</span>
 
                     {% endif %}
                 </td>
                 <td>
-                    <input type="checkbox" name="{{ order.id }}" form="action_form" >
+                    <input type="checkbox" name="{{ order.3 }}" form="action_form" >
                 </td>
             </tr>
           {% endfor %}
@@ -119,8 +120,10 @@
 {% block action_form %}
     <form id="action_form" method="post" action="{% url 'update_orders' %}">
     {% csrf_token %}
-    <div class="input-group">
-        <select class="custom-select border-right-0 border-danger" name="act">
+    <div class="row">
+        <div class="col">
+         <div class="input-group">
+        <select id="action_select" class="custom-select border-right-0 border-danger" name="act">
           <option selected>____________</option>
             {% for choice, name in action_list %}
                      <option value="{{ choice }}">{{ name }}</option>
@@ -128,6 +131,13 @@
         </select>
     <input class="btn btn-outline-danger border-left-0" type="submit" value="GO" >
     </div>
+    <div class="col"><label id="deliv_date_label" for="deliv_date" style="visibility: hidden">Дата доставки</label>
+    <input id='deliv_date' type="date" name="delivery_date">
+    </div>
+
+    </div>
+    </div>
+
 {##}
 {#                <div class="input-group">#}
 {#              <input type="text" name="search" style="width: 200px" class="form-control border-right-0 border-info" placeholder="...">#}

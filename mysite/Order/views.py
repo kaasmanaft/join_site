@@ -91,8 +91,9 @@ def show_group_orders(request):
         for order_group in group_orders:
             order_group['orders'] = orders_dict[order_group['item_id']]
         action = Order.order_status+[('DEL', 'delete')]
-        context = {'group_orders': group_orders, 'action_list': action}
-        return render(request, template_name='Order/group_page_tmp.html', context=context)
+        menu = Category.objects.get_level(1).order_by('name')
+        context = {'group_orders': group_orders, 'action_list': action, 'menu': menu}
+        return render(request, template_name='Order/group_page.html', context=context)
 
     else:
         return redirect('top')
@@ -153,7 +154,8 @@ def update_orders(request):
 def show_user_orders(request):
     orders = Order.objects.filter(user=request.user).select_related('item_id', 'group_order')
     orders = chunks(orders, 4, len(orders))
-    context = {'user_orders': orders}
+    menu = Category.objects.filter(level=1)
+    context = {'user_orders': orders, 'menu': menu}
     return render(request, template_name='Order/user_page.html', context=context)
 
 #
