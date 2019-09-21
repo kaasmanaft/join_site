@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'supercustomer.apps.SupercustomerConfig',
     'Order.apps.OrderConfig',
     'crispy_forms',
+    'django.contrib.postgres',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -23,24 +23,22 @@ def custom_paginator(page, part=100, number_items_on_page=24):
     page = int(page)
     if page <= 0:
         page = 1
-    hundreds = page//part
+    hundreds = page // part
     remainder = page % part
     if hundreds >= 1:
         paginator_correction = 3
-        min_index = (hundreds*part-3)*number_items_on_page
-        max_index = ((hundreds+1)*part+3)*number_items_on_page
+        min_index = (hundreds * part - 3) * number_items_on_page
+        max_index = ((hundreds + 1) * part + 3) * number_items_on_page
     else:
         paginator_correction = 0
-        min_index = hundreds*part*number_items_on_page
-        max_index = ((hundreds+1)*part+3)*number_items_on_page
+        min_index = hundreds * part * number_items_on_page
+        max_index = ((hundreds + 1) * part + 3) * number_items_on_page
     return {'hundreds': hundreds, 'remainder': remainder, 'paginator_correction': paginator_correction,
             'min_index': min_index, 'max_index': max_index}
 
 
-
-
 def get_page_steps(item_pk):
-    paginator = {'previousp': False, 'prev_3': False, 'prev_2': False, 'prev_1': False, 'page_content':None,
+    paginator = {'previousp': False, 'prev_3': False, 'prev_2': False, 'prev_1': False, 'page_content': None,
                  'last_id': None, 'first_id': None, 'next_1': False, 'next_2': False, 'next_3': False, 'nextp': False}
     pr = Item.objects.exclude(agg_photos__isnull=True).filter(pk__lt=item_pk).order_by('id')[:72].count()
     ne = Item.objects.exclude(agg_photos__isnull=True).filter(pk__gte=item_pk).order_by('id')[:72].count()
@@ -78,37 +76,44 @@ def get_page_steps(item_pk):
     # print(f'pk {item_pk} ne {ne} pr {pr} {paginator}')
     return paginator
 
+
 def custom_item_paginator(item_pk, step=None):
     search_word = ''
-    if step =='previousp':
-        pr = Item.objects.exclude(agg_photos__isnull=True)\
-                 .filter(pk__lt=item_pk, name__icontains=search_word).order_by('-id').values('id','name','base_photo_url',
-                                                                'agg_photos','price', 'min_qty')[:24]
+    if step == 'previousp':
+        pr = Item.objects.exclude(agg_photos__isnull=True) \
+                 .filter(pk__lt=item_pk, name__icontains=search_word).order_by('-id').values('id', 'name',
+                                                                                             'base_photo_url',
+                                                                                             'agg_photos', 'price',
+                                                                                             'min_qty')[:24]
         first_id = pr[0]['id']
-        last_id = pr[len(pr)-1]['id']
+        last_id = pr[len(pr) - 1]['id']
         paginator = get_page_steps(last_id)
         paginator['page_content'] = pr
         paginator['first_id'] = first_id
         paginator['last_id'] = last_id
 
-    elif step =='nextp':
-        pr = Item.objects.exclude(agg_photos__isnull=True)\
-                 .filter(pk__gt=item_pk, name__icontains=search_word).order_by('id').values('id','name','base_photo_url',
-                                                                'agg_photos','price', 'min_qty')[:24]
+    elif step == 'nextp':
+        pr = Item.objects.exclude(agg_photos__isnull=True) \
+                 .filter(pk__gt=item_pk, name__icontains=search_word).order_by('id').values('id', 'name',
+                                                                                            'base_photo_url',
+                                                                                            'agg_photos', 'price',
+                                                                                            'min_qty')[:24]
         first_id = pr[0]['id']
-        last_id = pr[len(pr)-1]['id']
+        last_id = pr[len(pr) - 1]['id']
         paginator = get_page_steps(last_id)
         paginator['page_content'] = pr
         paginator['first_id'] = first_id
         paginator['last_id'] = last_id
 
     else:
-        pr = Item.objects.exclude(agg_photos__isnull=True)\
-                 .filter(pk__gt=item_pk,name__icontains=search_word).order_by('id').values('id','name','base_photo_url',
-                                                                'agg_photos','price', 'min_qty')[:24]
+        pr = Item.objects.exclude(agg_photos__isnull=True) \
+                 .filter(pk__gt=item_pk, name__icontains=search_word).order_by('id').values('id', 'name',
+                                                                                            'base_photo_url',
+                                                                                            'agg_photos', 'price',
+                                                                                            'min_qty')[:24]
         paginator = get_page_steps(item_pk)
         first_id = pr[0]['id']
-        last_id = pr[len(pr)-1]['id']
+        last_id = pr[len(pr) - 1]['id']
         paginator['page_content'] = pr
         paginator['first_id'] = first_id
         paginator['last_id'] = last_id
@@ -134,9 +139,9 @@ def search_view(request):
         page = request.GET.get('page', 1)
         number_items_on_page = request.GET.get('items_on_page', 24)
         paginator_slice = custom_paginator(page, part=100, number_items_on_page=number_items_on_page)
-        items = Item.objects.exclude(agg_photos__isnull=True).filter(name__contains=search_word).order_by('id')\
-                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty')\
-        [paginator_slice['min_index']: paginator_slice['max_index']]
+        items = Item.objects.exclude(agg_photos__isnull=True).filter(name__contains=search_word).order_by('id') \
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty') \
+            [paginator_slice['min_index']: paginator_slice['max_index']]
         # print(items)
         print(connection.queries)
         breadcrumbs = ['Результаты поиска ' + search_word, ]
@@ -150,8 +155,8 @@ def search_view(request):
         paginator_numbers = [x + int(page) for x in range(-2, 3)]
         paginator_numbers.append(current_page)
         context = {'menu': menu, 'cards': cards, 'page': paginator_numbers, 'breadcrumbs': breadcrumbs,
-                   'paginator_slice': paginator_slice, 'search_word':search_word}
-        get_query() #
+                   'paginator_slice': paginator_slice, 'search_word': search_word}
+        get_query()  #
         return render(request, 'product/search_view.html', context=context)
     else:
         pass
@@ -166,8 +171,9 @@ def list_view(request, category_slug):
             number_items_on_page = request.GET.get('items_on_page', 24)
             paginator_slice = custom_paginator(page, part=100, number_items_on_page=number_items_on_page)
             items = Item.objects.exclude(agg_photos__isnull=True).order_by('id') \
-                .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')[paginator_slice['min_index']:
-                                                                                     paginator_slice['max_index']]
+                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')[
+                    paginator_slice['min_index']:
+                    paginator_slice['max_index']]
             menu = Category.objects.get_level(1).order_by('name')
 
     else:
@@ -183,8 +189,9 @@ def list_view(request, category_slug):
         items = Item.objects.filter(
             pk__in=ItemCategory.objects.filter(
                 category_id__in=descendants).values('item_id')).exclude(agg_photos__isnull=True).order_by('id') \
-            .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')[paginator_slice['min_index']:
-                                                                                          paginator_slice['max_index']]
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')[
+                paginator_slice['min_index']:
+                paginator_slice['max_index']]
 
         menu = Category.objects.get_children(category.id).order_by('name')
     # print(len(items))
@@ -192,15 +199,16 @@ def list_view(request, category_slug):
     get_query()
     # print('-' * 8)
     if paginator_slice['hundreds']:
-        current_page = paginator.get_page(int(page) % (paginator_slice['hundreds']*100)+3)
+        current_page = paginator.get_page(int(page) % (paginator_slice['hundreds'] * 100) + 3)
     else:
         current_page = paginator.get_page(int(page))
     get_query()
     # print('3' * 8)
     cards = [n for n in chunks(current_page, 4, 24)]
-    paginator_numbers = [x+int(page) for x in range(-2, 3) ]
+    paginator_numbers = [x + int(page) for x in range(-2, 3)]
     paginator_numbers.append(current_page)
-    context = {'menu': menu, 'cards': cards, 'page': paginator_numbers, 'breadcrumbs': breadcrumbs, 'paginator_slice': paginator_slice}
+    context = {'menu': menu, 'cards': cards, 'page': paginator_numbers, 'breadcrumbs': breadcrumbs,
+               'paginator_slice': paginator_slice}
     get_query()
     return render(request, 'product/category_view.html', context=context)
 
@@ -210,7 +218,7 @@ def list_view_tmp(request, category_slug):
     if category_slug.lower() == 'top':
         breadcrumbs = None
         items = Item.objects.all().exclude(agg_photos__isnull=True).order_by('id') \
-                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')
+            .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')
         menu = Category.objects.get_level(1).order_by('name')
     else:
         category = Category.objects.get(slug=category_slug)
@@ -221,7 +229,7 @@ def list_view_tmp(request, category_slug):
         items = Item.objects.filter(
             pk__in=ItemCategory.objects.filter(
                 category_id__in=descendants).values('item_id')).exclude(agg_photos__isnull=True).order_by('id') \
-            .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')[3000:4000]
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')[3000:4000]
         menu = Category.objects.get_children(category.id).order_by('name')
     page = request.GET.get('page', 1)
     number_items_on_page = request.GET.get('items_on_page', '24')

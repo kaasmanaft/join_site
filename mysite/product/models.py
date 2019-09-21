@@ -42,6 +42,8 @@ class Item(models.Model):
 
     def get_abs_url(self):
         return reverse('product_view', kwargs={'product_id': self.id})
+    class Meta:
+        index_together = ['name', 'agg_photos']
 
 class Trademark(models.Model):
     description = models.TextField(null=True)  # Описание,
