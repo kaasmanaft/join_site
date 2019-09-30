@@ -138,25 +138,15 @@ def search_view(request):
         search_word = request.GET.get('search', None).lower()
         page = request.GET.get('page', 1)
         number_items_on_page = request.GET.get('items_on_page', 24)
-        paginator_slice = custom_paginator(page, part=100, number_items_on_page=number_items_on_page)
         items = Item.objects.exclude(agg_photos__isnull=True).filter(name__contains=search_word).order_by('id') \
-                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty') \
-            [paginator_slice['min_index']: paginator_slice['max_index']]
-        # print(items)
-        print(connection.queries)
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty')
         breadcrumbs = ['Результаты поиска ' + search_word, ]
         menu = Category.objects.get_level(1).order_by('name')
         paginator = Paginator(items, number_items_on_page)
-        if paginator_slice['hundreds']:
-            current_page = paginator.get_page(int(page) % (paginator_slice['hundreds'] * 10) + 3)
-        else:
-            current_page = paginator.get_page(int(page))
-        cards = [n for n in chunks(current_page, 4, 24)]
-        paginator_numbers = [x + int(page) for x in range(-2, 3)]
-        paginator_numbers.append(current_page)
-        context = {'menu': menu, 'cards': cards, 'page': paginator_numbers, 'breadcrumbs': breadcrumbs,
-                   'paginator_slice': paginator_slice, 'search_word': search_word}
-        get_query()  #
+        current_page = paginator.get_page(page)
+        cards = [n for n in chunks(current_page, 4, number_items_on_page)]
+        context = {'menu': menu, 'cards': cards, 'page': current_page, 'breadcrumbs': breadcrumbs,
+                   'search_word': search_word}
         return render(request, 'product/search_view.html', context=context)
     else:
         pass
@@ -169,47 +159,26 @@ def list_view(request, category_slug):
             breadcrumbs = None
             page = request.GET.get('page', 1)
             number_items_on_page = request.GET.get('items_on_page', 24)
-            paginator_slice = custom_paginator(page, part=100, number_items_on_page=number_items_on_page)
             items = Item.objects.exclude(agg_photos__isnull=True).order_by('id') \
-                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')[
-                    paginator_slice['min_index']:
-                    paginator_slice['max_index']]
+                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')
             menu = Category.objects.get_level(1).order_by('name')
-
     else:
         page = request.GET.get('page', 1)
         number_items_on_page = request.GET.get('items_on_page', 24)
-        paginator_slice = custom_paginator(page, part=100, number_items_on_page=number_items_on_page)
         category = Category.objects.get(slug=category_slug)
         breadcrumbs = category.get_bread_crumbs()
         descendants = Category.objects.get_descendants_id(category.id)
-
         if descendants.count() == 0:
             descendants = [category, ]
         items = Item.objects.filter(
             pk__in=ItemCategory.objects.filter(
                 category_id__in=descendants).values('item_id')).exclude(agg_photos__isnull=True).order_by('id') \
-                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')[
-                paginator_slice['min_index']:
-                paginator_slice['max_index']]
-
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')
         menu = Category.objects.get_children(category.id).order_by('name')
-    # print(len(items))
     paginator = Paginator(items, number_items_on_page)
-    get_query()
-    # print('-' * 8)
-    if paginator_slice['hundreds']:
-        current_page = paginator.get_page(int(page) % (paginator_slice['hundreds'] * 100) + 3)
-    else:
-        current_page = paginator.get_page(int(page))
-    get_query()
-    # print('3' * 8)
-    cards = [n for n in chunks(current_page, 4, 24)]
-    paginator_numbers = [x + int(page) for x in range(-2, 3)]
-    paginator_numbers.append(current_page)
-    context = {'menu': menu, 'cards': cards, 'page': paginator_numbers, 'breadcrumbs': breadcrumbs,
-               'paginator_slice': paginator_slice}
-    get_query()
+    current_page = paginator.get_page(page)
+    cards = [n for n in chunks(current_page, 4, number_items_on_page)]
+    context = {'menu': menu, 'cards': cards, 'page': current_page, 'breadcrumbs': breadcrumbs,}
     return render(request, 'product/category_view.html', context=context)
 
 

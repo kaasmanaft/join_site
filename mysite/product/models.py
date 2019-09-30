@@ -129,14 +129,12 @@ class CategoryManager(models.Manager):
 
     def get_children(self, node_id):
         node_object = Category.objects.get(pk=node_id)
-        # print(f'get Category with id {node_id} {node_object} -> {node_object.name}')
         if node_object.level > 1:
             node_in_pass_mask = '.' + str(node_object.id) + '.'
             children = Category.objects.all().filter(level=node_object.level + 1, path__icontains=node_in_pass_mask)
         else:
             node_in_pass_mask = str(node_object.id) + '.'
             children = Category.objects.all().filter(level=node_object.level + 1, path__istartswith=node_in_pass_mask)
-        # print(f'children of node {node_id} is {children}')
         return children
 
     def get_descendants_id(self, node_id):
