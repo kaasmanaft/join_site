@@ -8,7 +8,7 @@ from product.models import Item, Category,ItemCategory
 from django.db import transaction
 from django.contrib import messages
 from django.core.paginator import Paginator
-from product.views import chunks, get_query, timer
+from product.views import get_query, timer
 
 def dictfetchall(cursor) -> List:
     "Return all rows from a cursor as a dict"
@@ -153,7 +153,6 @@ def update_orders(request):
 @login_required()
 def show_user_orders(request):
     orders = Order.objects.filter(user=request.user).select_related('item_id', 'group_order')
-    orders = chunks(orders, 4, len(orders))
     menu = Category.objects.filter(level=1)
     context = {'user_orders': orders, 'menu': menu}
     return render(request, template_name='Order/user_page.html', context=context)

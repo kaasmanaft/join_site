@@ -159,4 +159,6 @@ CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'top'
 
+LOGIN_URL = 'login'
+
 MESSAGE_TAGS = {message_constants.ERROR: 'danger'}

@@ -1,15 +1,8 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-
-    {% for row in   cards  %}
- <div class="card-deck">
-
-   {% for card in  row %}
-
+    <div class="card-deck">
+    {% for card in   page  %}
   <div class="card">
-{# {% for k,v in card.items %}#}
-{#     <b>{{ k }}</b> <small>{{ v }}</small>#}
-{#{% endfor %}#}
     <img class="card-img-top w-100 h-auto" src="{{card.base_photo_url}}{{ card.agg_photos.0 }}/400.jpg" alt="{{ card.name |slice:":25" }}">
     <div class="card-body">
        <a href="{% url 'product_view' card.id %}"> <h5 class="card-title">{{ card.name |slice:":30" }}</h5></a>
@@ -39,18 +32,20 @@
         <div class="row">
             <div class="col col-5"><small class="text-muted">{{card.price}} руб.</small></div>
             <div class="col col-2"></div>
-            {% if card.min_qty > 0 %}
             <div class="col col-5"><small class="text-muted">{{card.min_qty}} шт.</small></div>
-            {% else %}
-                <div class="col col-5"><small class="text-muted">1 шт.</small></div>
-            {% endif %}
         </div>
     </div>
   </div>
- {% endfor %}
 
-</div>
+        {% if forloop.counter|divisibleby:'4' %}
+            </div>
+
+             {% if  not forloop.last %}
+            <div class="card-deck">
+            {% endif %}
+        {% endif %}
     {% endfor %}
+<!--  M  -->
 {% endblock %}
 {% block pagination_top %}
          {% spaceless %}

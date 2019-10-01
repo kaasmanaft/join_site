@@ -1,11 +1,7 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-
-    {% for row in   cards  %}
- <div class="card-deck">
-
-   {% for card in  row %}
-
+    <div class="card-deck">
+    {% for card in   page  %}
   <div class="card">
     <img class="card-img-top w-100 h-auto" src="{{card.base_photo_url}}{{ card.agg_photos.0 }}/400.jpg" alt="{{ card.name |slice:":25" }}">
     <div class="card-body">
@@ -40,10 +36,23 @@
         </div>
     </div>
   </div>
- {% endfor %}
 
-</div>
+        {% if forloop.counter|divisibleby:'4' %}
+            </div>
+
+             {% if  not forloop.last %}
+            <div class="card-deck">
+            {% endif %}
+        {% endif %}
+
+
+{#            {% if forloop.last %}#}
+{#                 </div>#}
+{#            {% endif %}#}
+
+
     {% endfor %}
+<!--  M  -->
 {% endblock %}
 {% block pagination_top %}
          {% spaceless %}

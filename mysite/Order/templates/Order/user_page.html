@@ -1,15 +1,8 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-
-    {% for row in   user_orders  %}
  <div class="card-deck">
-
-   {% for card in  row %}
-
-  <div class="card">
-{# {% for k,v in card.items %}#}
-{#     <b>{{ k }}</b> <small>{{ v }}</small>#}
-{#{% endfor %}#}
+    {% for card in   user_orders  %}
+ <div class="card">
     <img class="card-img-top w-100 h-auto" src="{{card.item_id.base_photo_url}}{{ card.item_id.agg_photos.0 }}/400.jpg" alt="{{ card.item_id.name |slice:":25" }}">
     <div class="card-body">
        <a href="{% url 'product_view' card.item_id.id %}"> <h5 class="card-title">{{ card.item_id.name |slice:":30" }}</h5></a>
@@ -48,107 +41,12 @@
         </div>
     </div>
   </div>
- {% endfor %}
+        {% if forloop.counter|divisibleby:'4' %}
+            </div>
 
-</div>
+             {% if  not forloop.last %}
+            <div class="card-deck">
+            {% endif %}
+        {% endif %}
     {% endfor %}
 {% endblock %}
-{% block pagination_top %}
-        {% spaceless %}
-<!--  Pagination  -->
-             <div class="container-fluid ">
-                      {% if page %}
-                            <nav aria-label="Page navigation " class="nav mt-3">
-                      <ul class="pagination ml-auto">
-                          {% if page.5.has_previous %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.1 }}" tabindex="-1">Previous</a>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Previous</a>
-                          {% endif %}
-                              </li>
-                            <li class="page-item">
-                          <a class="page-link" href="?page={{ page.0 }}" >{{ page.0 }}</a>
-                         </li>
-
-                         <li class="page-item">
-                          <a class="page-link" href="?page={{ page.1 }}" >{{ page.1 }}</a>
-                         </li>
-
-                       <li class="page-item active">
-                       <a class="btn btn-info" href="#">{{ page.2 }} <span class="sr-only">(current)</span></a>
-                       </li>
-                       <li class="page-item">
-                          <a class="page-link" href="?page={{ page.3 }}" >{{ page.3 }}</a>
-                         </li>
-                         <li class="page-item">
-                          <a class="page-link" href="?page={{ page.4 }}" >{{ page.4 }}</a>
-                         </li>
-
-
-                          {% if page.5.has_next %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.3 }}">Next</a> </li>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Next</a>
-                              </li>
-                          {% endif %}
-                      </ul>
-                    </nav>
-                     {% endif %}
-              </div>
-<!--  Pagination  -->
-        {% endspaceless %}
-{% endblock pagination_top %}
-
-{% block pagination_bottom %}
-        {% spaceless %}
-<!--  Pagination  -->
-             <div class="container-fluid ">
-                      {% if page %}
-                            <nav aria-label="Page navigation " class="nav mt-3">
-                      <ul class="pagination ml-auto">
-                          {% if page.5.has_previous %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.1 }}" tabindex="-1">Previous</a>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Previous</a>
-                          {% endif %}
-                              </li>
-                            <li class="page-item">
-                          <a class="page-link" href="?page={{ page.0 }}" >{{ page.0 }}</a>
-                         </li>
-
-                         <li class="page-item">
-                          <a class="page-link" href="?page={{ page.1 }}" >{{ page.1 }}</a>
-                         </li>
-
-                       <li class="page-item active">
-                       <a class="btn btn-info" href="#">{{ page.2 }} <span class="sr-only">(current)</span></a>
-                       </li>
-                       <li class="page-item">
-                          <a class="page-link" href="?page={{ page.3 }}" >{{ page.3 }}</a>
-                         </li>
-                         <li class="page-item">
-                          <a class="page-link" href="?page={{ page.4 }}" >{{ page.4 }}</a>
-                         </li>
-
-
-                          {% if page.5.has_next %}
-                              <li class="page-item">
-                              <a class="page-link" href="?page={{ page.3 }}">Next</a> </li>
-                          {% else %}
-                              <li class="page-item disabled">
-                              <a class="page-link" href="#">Next</a>
-                              </li>
-                          {% endif %}
-                      </ul>
-                    </nav>
-                     {% endif %}
-              </div>
-<!--  Pagination  -->        {% endspaceless %}
-{% endblock pagination_bottom %}
-
