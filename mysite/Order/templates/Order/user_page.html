@@ -1,68 +1,52 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-{#{% if dbd %}#}
-{#<h1>it exist</h1>#}
-{#{% endif %}#}
-
-    {% for row in orders %}
-        <div class="border border-primary">
-          <div class="col">
-          <a class="btn btn-info" href="{% url 'item' row.id %}">Detail</a>
-          {{ row.id }}
-           {% for layer in row.agg_photos %}
-           <img class="ml-4" src="{{ row.base_photo_url }}{{layer}}/140.jpg">
-            {% endfor %}
-          <div class="row">
-              <div class="col col-xl-auto"><b>Name</b> {{ row.name }}</div>
-             <div class="col-xl-auto"> <b>Price</b> {{ row.price }}</div>
-          </div>
-          {% if row.user_order_quantity %}
-            <div class="row">
-                <div class="col">
-                    Your order is  {{ row.user_order_quantity }}
-                </div>
-                <div class="col">
-                   Total order is  {{ row.total_order_quantity }}
-                </div>
+ <div class="card-deck">
+    {% for card in   user_orders  %}
+ <div class="card">
+    <img class="card-img-top w-100 h-auto" src="{{card.item_id.base_photo_url}}{{ card.item_id.agg_photos.0 }}/400.jpg" alt="{{ card.item_id.name |slice:":25" }}">
+    <div class="card-body">
+       <a href="{% url 'product_view' card.item_id.id %}"> <h5 class="card-title">{{ card.item_id.name |slice:":30" }}</h5></a>
+      <p class="card.item_id.text">
+          {% autoescape on %}
+             {{ card.item_id.description |slice:'3:60' }}
+          {% endautoescape %}
+      <a href="{% url 'product_view' card.item_id.id %}"><small>Подробнее</small></a>
+      </p>
+    </div>
+          <form method="post" action="{% url 'save_order' %}">
+            {% csrf_token %}
+              <div class="form-group row m-2">
+                    <input id="id" type="hidden"  name="id" value="{{ card.item_id.id }}" >
+                  <div class="col-xs-4 m-1">
+                    <label for="amount">количество</label>
+                  </div>
+                  <div class="col-xs-4 m-1">
+                     <input class="amount_number" id="amount"  type="number"  name="quantity" min="0" value="1">
+                  </div>
+                  <div class="col-xs-4 m-1">
+                    <button type="submit" class="button btn-success">Заказать</button>
+                  </div>
+              </div>
+          </form>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col col-5"><small class="text-muted">{{card.item_id.price}} руб.</small></div>
+            <div class="col col-2"></div>
+            <div class="col col-5"><small class="text-muted">{{card.item_id.min_qty}} шт.</small></div>
+        </div>
+                <div class="row">
+            <div class="col col-5"><small class="text-muted">ваш заказ {{card.quantity}} шт.</small></div>
+            <div class="col col-2"></div>
+            <div class="col col-5"><small class="text-muted">общий заказ {{card.group_order.total_quantity}} шт.</small></div>
+        </div>
+    </div>
+  </div>
+        {% if forloop.counter|divisibleby:'4' %}
             </div>
+
+             {% if  not forloop.last %}
+            <div class="card-deck">
             {% endif %}
-          </div>
-          </div>
-    <form method="post" action="{% url 'save_order' %}">
-    {% csrf_token %}
-        <label for="amount">number of goods </label>
-        <input id="amount" type="number"  name="quantity" value="1">
-        <input id="id" type="hidden"  name="id" value="{{ row.id }}" >
-    <button type="submit" class="button btn-success">Update</button>
-    </form>
-
+        {% endif %}
     {% endfor %}
-
-
-
-{#    {%  for row in dbd %}#}
-{#        <div class="border border-danger">#}
-{#       {% if row.1 %}#}
-{#           <b class="alert">attribute exist</b>#}
-{#        <div class="row">#}
-{#            {% for layer in row.1 %}#}
-{#           <img class="ml-4" src="{{ row.2 }}{{layer}}/140.jpg">#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#       {% endif %}#}
-{#        {% for cell in row %}#}
-{#        <div class="col-xl-auto">{{ cell }}</div>#}
-{#            <hr>#}
-{#        {% endfor %}#}
-{#        <hr>#}
-{#        </div>#}
-{#    <form method="post" action="{% url 'item'  row.0  %}">#}
-{#    {% csrf_token %}#}
-{#        <label for="amount">number of goods </label>#}
-{#        <input id="amount" type="number"  name="quantity" value="1">#}
-{#        <input id="id" type="hidden"  name="id" value="{{ row.0 }}" >#}
-{#    <button type="submit" class="button btn-success">get</button>#}
-{#    </form>#}
-{#    {% endfor %}#}
-
-{% endblock content %}
+{% endblock %}

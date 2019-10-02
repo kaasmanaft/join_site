@@ -1,0 +1,66 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+
+
+  <div class="card">
+          <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+          <ol class="carousel-indicators">
+              {% for img in card.agg_photos %}
+                  {% if img == 0 %}
+                         <li class = "carousel-bottom-indicator"data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                  {% else %}
+                         <li data-target="#carouselExampleIndicators" data-slide-to="{{ img }}"></li>
+                  {% endif %}
+              {% endfor %}
+          </ol>
+          <div class="carousel-inner">
+              {%  for img in card.agg_photos %}
+                       {% if img == 0 %}
+                           <div class="carousel-item align-content-md-center active">
+                       {% else %}
+                           <div class="carousel-item ">
+                       {% endif %}
+              <img  src="{{card.base_photo_url}}{{ img }}/700.jpg" alt="{{ card.name |slice:":25" }}" alt="First slide">
+               </div>
+              {% endfor %}
+          </div>
+          <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+          </a>
+          <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon " aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+          </a>
+        </div>
+
+    <div class="card-body">
+      <h5 class="card-title">{{ card.name }}</h5>
+      <p class="card-text">
+          {% autoescape off %}
+            {{ card.description }}
+          {% endautoescape %}
+
+      </p>
+
+               <form method="post" action="{% url 'save_order' %}">
+                    {% csrf_token %}
+                        <label for="amount">number of goods </label>
+                        <input id="amount" type="number"  name="quantity" min="0" value="1">
+                        <input id="id" type="hidden"  name="id" value="{{ card.id }}" >
+                    <button type="submit" class="button btn-success">Заказать</button>
+                </form>
+
+    </div>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col col-5"><small class="text-muted">{{card.price}} руб.</small></div>
+            <div class="col col-2"></div>
+            <div class="col col-5"><small class="text-muted">{{card.min_qty}} шт.</small></div>
+        </div>
+
+    </div>
+  </div>
+
+
+{% endblock %}

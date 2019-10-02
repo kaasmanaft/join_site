@@ -1,65 +1,79 @@
 {% extends 'customer/base.html' %}
 {% block content %}
-{#{% if dbd %}#}
-{#<h1>it exist</h1>#}
-{#{% endif %}#}
 
-    {% for row in dbd %}
-        <div class="border border-primary">
-          <div class="col">
-          <a class="btn btn-info" href="{% url 'item' row.id %}">Detail</a>
-           {% for layer in row.agg_photos %}
-           <img class="ml-4" src="{{ row.base_photo_url }}{{layer}}/140.jpg">
-            {% endfor %}
-          <div class="row">
-              <div class="col col-xl-auto"><b>Name</b> {{ row.name }}</div>
-             <div class="col-xl-auto"> <b>Price</b> {{ row.price }}</div>
-          </div>
-          {% if user_order_quantity %}
-            <div class="row">
-                <div class="col">
-                    Your order is  {{ user_order_quantity }}
-                </div>
 
+<!--  Pagination  -->
+<nav aria-label="Page navigation example" class="mt-3">
+  <ul class="pagination">
+{#    <li class="page-item disabled">#}
+      {% if obj.has_previous %}
+          <li class="page-item">
+          <a class="page-link" href="?page={{ obj.previous_page_number }}" tabindex="-1">Previous</a>
+      {% else %}
+          <li class="page-item disabled">
+          <a class="page-link" href="#">Previous</a>
+      {% endif %}
+          </li>
+{% for num_page in obj.paginator.page_range %}
+{% if num_page == obj.number %}
+   <li class="page-item active">
+   <a class="btn btn-info" href="#">{{ num_page }} <span class="sr-only">(current)</span></a>
+   </li>
+{% elif num_page > obj.number|add:'-3' and num_page < obj.number|add:'3'%}
+     <li class="page-item">
+      <a class="page-link" href="?page={{ num_page }}" >{{ num_page }}</a>
+     </li>
+{% endif %}
+{% endfor %}
+      {% if obj.has_next %}
+          <li class="page-item">
+          <a class="page-link" href="?page={{ obj.next_page_number }}">Next</a> </li>
+      {% else %}
+          <li class="page-item disabled">
+          <a class="page-link" href="#">Next</a>
+          </li>
+      {% endif %}
+  </ul>
+</nav>
+    <!--  Pagination  -->
+    {% for row in obj %}
+    <div class="border border-primary toast-body">
+        <div class="row ">
+            <div class="col-3">
+              <a href="{% url 'item'  row.id  %}" >detail</a>
             </div>
-            {% endif %}
-          </div>
-          </div>
-    <form method="post" action="{% url 'save_order' %}">
-    {% csrf_token %}
-        <label for="amount">number of goods </label>
-        <input id="amount" type="number"  name="quantity" value="1">
-        <input id="id" type="hidden"  name="id" value="{{ row.id }}" >
-    <button type="submit" class="button btn-success">get</button>
-    </form>
+             {% if row.agg_photos  %}
+                 <div class="col-3">
+                     <img src="{{row.base_photo_url}}{{ row.agg_photos.0 }}/140.jpg">
+                </div>
+              {% endif %}
+        <div class="col-3">
+            {{ row.name }}
+        </div>
 
+
+
+
+    </div>
+    <div class="row pl-3">
+        <b>Price: {{ row.price }}</b>
+    </div>
+        <div class="col-lg-12">
+            {% autoescape off %}
+            {{ row.description }}
+            {% endautoescape %}
+        </div>
+               <form method="post" action="{% url 'save_order' %}">
+                    {% csrf_token %}
+                        <label for="amount">number of goods </label>
+                        <input id="amount" type="number"  name="quantity" min="0" value="1">
+                        <input id="id" type="hidden"  name="id" value="{{ row.id }}" >
+                    <button type="submit" class="button btn-success">get</button>
+                </form>
+        </div>
     {% endfor %}
 
 
 
-{#    {%  for row in dbd %}#}
-{#        <div class="border border-danger">#}
-{#       {% if row.1 %}#}
-{#           <b class="alert">attribute exist</b>#}
-{#        <div class="row">#}
-{#            {% for layer in row.1 %}#}
-{#           <img class="ml-4" src="{{ row.2 }}{{layer}}/140.jpg">#}
-{#            {% endfor %}#}
-{#        </div>#}
-{#       {% endif %}#}
-{#        {% for cell in row %}#}
-{#        <div class="col-xl-auto">{{ cell }}</div>#}
-{#            <hr>#}
-{#        {% endfor %}#}
-{#        <hr>#}
-{#        </div>#}
-{#    <form method="post" action="{% url 'item'  row.0  %}">#}
-{#    {% csrf_token %}#}
-{#        <label for="amount">number of goods </label>#}
-{#        <input id="amount" type="number"  name="quantity" value="1">#}
-{#        <input id="id" type="hidden"  name="id" value="{{ row.0 }}" >#}
-{#    <button type="submit" class="button btn-success">get</button>#}
-{#    </form>#}
-{#    {% endfor %}#}
 
 {% endblock content %}

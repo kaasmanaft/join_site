@@ -1,0 +1,85 @@
+{% extends 'customer/base.html' %}
+{% block content %}
+<!--  Pagination  -->
+
+<nav aria-label="Page navigation example" class="mt-3">
+  <ul class="pagination">
+{#    <li class="page-item disabled">#}
+      {% if obj.has_previous %}
+          <li class="page-item">
+          <a class="page-link" href="?page={{ obj.previous_page_number }}" tabindex="-1">Previous</a>
+      {% else %}
+          <li class="page-item disabled">
+          <a class="page-link" href="#">Previous</a>
+      {% endif %}
+
+          </li>
+        {% for num_page in obj.paginator.page_range %}
+
+            {% if num_page == obj.number %}
+               <li class="page-item active">
+               <a class="btn btn-info" href="#">{{ num_page }} <span class="sr-only">(current)</span></a>
+               </li>
+                {% elif num_page > obj.number|add:'-3' and num_page < obj.number|add:'3'%}
+                 <li class="page-item">
+                  <a class="page-link" href="?page={{ num_page }}" >{{ num_page }}</a>
+                 </li>
+            {% endif %}
+
+        {% endfor %}
+
+      {% if obj.has_next %}
+          <li class="page-item">
+          <a class="page-link" href="?page={{ obj.next_page_number }}">Next</a>
+      {% else %}
+          <li class="page-item disabled">
+          <a class="page-link" href="#">Next</a>
+      {% endif %}
+
+    </li>
+
+  </ul>
+</nav>
+<!--  Pagination  -->
+
+
+    <div class="container ">
+    <div class="row ">
+
+        <div class="col-3">
+            {{ obj.name }}
+        </div>
+        {% if obj.agg_photos  %}
+        <div class="col-3">
+           <img src="{{obj.base_photo_url}}{{ obj.agg_photos.0 }}/140.jpg">
+        </div>
+        {% endif %}
+        <div class="col-lg-6">
+          {% autoescape off %}
+              {{ obj.description }}
+          {% endautoescape %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-2"><b>Price:</b> {{ obj.price }}</div>
+        <div class="col-sm-2"><b>Min qty:</b> {{ obj.min_qty }}</div>
+        <div class="col-sm-2"><b>Price:</b> {{ obj.price }}</div>
+    </div>
+        <div class="col-lg-12">
+
+            {{ row.description }}
+
+        </div>
+               <form method="post" action="{% url 'save_order' %}">
+                    {% csrf_token %}
+                        <label for="amount">number of goods </label>
+                        <input id="amount" type="number"  name="quantity" min="0" value="1">
+                        <input id="id" type="hidden"  name="id" value="{{ obj.id }}" >
+                    <button type="submit" class="button btn-info">get</button>
+                </form>
+        </div>
+
+
+
+
+{% endblock content %}
