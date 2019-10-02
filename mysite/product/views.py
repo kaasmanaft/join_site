@@ -47,7 +47,7 @@ def search_view(request):
         page = request.GET.get('page', 1)
         number_items_on_page = request.GET.get('items_on_page', 24)
         items = Item.objects.exclude(agg_photos__isnull=True).filter(name__contains=search_word).order_by('id') \
-                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty')
+                    .values('id', 'agg_photos', 'base_photo_url', 'name', 'price', 'min_qty','description')
         breadcrumbs = ['Результаты поиска ' + search_word, ]
         menu = Category.objects.get_level(1).order_by('name')
         paginator = Paginator(items, number_items_on_page)

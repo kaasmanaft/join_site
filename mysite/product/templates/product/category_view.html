@@ -5,10 +5,10 @@
   <div class="card">
     <img class="card-img-top w-100 h-auto" src="{{card.base_photo_url}}{{ card.agg_photos.0 }}/400.jpg" alt="{{ card.name |slice:":25" }}">
     <div class="card-body">
-       <a href="{% url 'product_view' card.id %}"> <h5 class="card-title">{{ card.name |slice:":30" }}</h5></a>
+       <a href="{% url 'product_view' card.id %}"> <h5 class="card-title">{{ card.name |truncatechars:30 }}</h5></a>
       <p class="card-text">
-          {% autoescape on %}
-             {{ card.description |slice:'3:60' }}
+            {% autoescape off %}
+             {{ card.description |truncatechars_html:60 }}
           {% endautoescape %}
       <a href="{% url 'product_view' card.id %}"><small>Подробнее</small></a>
       </p>
