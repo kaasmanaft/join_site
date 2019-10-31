@@ -3,7 +3,7 @@
     <div class="card-deck">
     {% for card in   page  %}
   <div class="card">
-    <img class="card-img-top w-100 h-auto" src="{{card.base_photo_url}}{{ card.agg_photos.0 }}/400.jpg" alt="{{ card.name |slice:":25" }}">
+    <img class="card-img-top w-90 h-auto" src="{{card.base_photo_url}}{{ card.agg_photos.0 }}/400.jpg" alt={{ card.name |slice:":25" }}>
     <div class="card-body">
        <a href="{% url 'product_view' card.id %}"> <h5 class="card-title">{{ card.name |truncatechars:30 }}</h5></a>
       <p class="card-text">
@@ -56,7 +56,7 @@
                       <ul class="pagination ml-auto">
                           {% if page.has_previous %}
                               <li class="page-item">
-                              <a class="page-link" href="?page={{ page.previous_page_number }}" tabindex="-1">Previous</a>
+                              <a class="page-link" href="?page={{ page.previous_page_number }}" tabindex="-1">Prev</a>
                           {% else %}
                               <li class="page-item disabled">
                               <a class="page-link" href="#">Previous</a>

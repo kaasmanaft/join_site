@@ -66,7 +66,7 @@ def list_view(request, category_slug):
             page = request.GET.get('page', 1)
             number_items_on_page = request.GET.get('items_on_page', 24)
             items = Item.objects.exclude(agg_photos__isnull=True).order_by('id') \
-                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description')
+                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'min_qty','price')
             menu = Category.objects.get_level(1).order_by('name')
         else:
             page = request.GET.get('page', 1)
@@ -79,7 +79,7 @@ def list_view(request, category_slug):
             items = Item.objects.filter(
                 pk__in=ItemCategory.objects.filter(
                     category_id__in=descendants).values('item_id')).exclude(agg_photos__isnull=True).order_by('id') \
-                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'price')
+                        .values('id', 'agg_photos', 'base_photo_url', 'name', 'description', 'min_qty','price')
             menu = Category.objects.get_children(category.id).order_by('name')
         paginator = Paginator(items, number_items_on_page)
         current_page = paginator.get_page(page)

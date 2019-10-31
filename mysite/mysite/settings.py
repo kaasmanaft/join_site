@@ -26,8 +26,16 @@ SECRET_KEY = 'mf0jz8@ip1q!0(k6+)5udhmz=iclse10229khb645fy=gs$$hs'
 DEBUG = True
 
 ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = ['192.168.93.131']
 
-INTERNAL_IPS =['127.0.0.1',]
+INTERNAL_IPS =['127.0.0.1']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
 
 # Application definition
 
@@ -44,7 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'debug_toolbar'
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -86,10 +94,10 @@ DATABASES = {
     'default': {
         'ENGINE':'django.db.backends.postgresql',
         'NAME': 'django_db',
-        'USER': 'postgres',
-        'PASSWORD': 'pass123',
+        'USER': 'kaa',
+        'PASSWORD': 'kaa',
         'HOST': 'localhost',
-        'PORT': '4444'
+        'PORT': '5432'
              }
 }
 # }DATABASES = {

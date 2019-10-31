@@ -61,6 +61,7 @@ class GroupOrder(models.Model):
     owner = models.ForeignKey(Group, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     total_quantity = models.PositiveSmallIntegerField(default=0)
+    
 
     def get_total_quantity(self):
         total_quantity = Order.objects.filter(user__groups__exact=self.owner, item_id=self.item).aggregate(summ=Sum('quantity'))
